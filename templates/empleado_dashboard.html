@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Panel de Empleados</h1>
+<p>Bienvenido, {{ user.username }} (Empleado)</p>
+
+<div class="dashboard-options">
+    <a href="{% url 'registrar_venta' %}" class="btn">Registrar Venta</a>
+</div>
+{% endblock %}

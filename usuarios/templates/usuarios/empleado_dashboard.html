@@ -1,0 +1,12 @@
+{% extends 'base.html' %}  <!-- Asegúrate de tener una plantilla base -->
+
+{% block content %}
+<h1>Panel de Empleado</h1>
+<p>Bienvenido, {{ request.user.username }} (Empleado)</p>
+
+<div class="dashboard-options">
+    <p>Aquí puedes ver tus tareas asignadas, horarios y otra información relevante.</p>
+    <!-- Agrega más contenido según sea necesario -->
+</div>
+
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{% if form.instance.id %}Editar{% else %}Crear{% endif %} Producto</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Guardar</button>
+    <a href="{% url 'lista_productos' %}" class="btn btn-cancelar">Cancelar</a>
+</form>
+{% endblock %}

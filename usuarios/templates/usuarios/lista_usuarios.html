@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Empleados</title>
+</head>
+<body>
+    <h2>Empleados del negocio: {{ request.user.negocio.nombre }}</h2>
+    <a href="{% url 'crear_usuario' %}">Agregar Empleado</a>
+    <ul>
+        {% for empleado in empleados %}
+            <li>{{ empleado.username }} - {{ empleado.email }} 
+                <a href="{% url 'editar_usuario' empleado.id %}">Editar</a> 
+                <a href="{% url 'eliminar_usuario' empleado.id %}" onclick="return confirm('¿Seguro que deseas eliminar este empleado?')">Eliminar</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

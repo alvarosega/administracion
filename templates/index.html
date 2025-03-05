@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Principal</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+        .container { max-width: 500px; margin: auto; }
+        .btn { display: block; margin: 10px 0; padding: 10px; background-color: #007BFF; color: white; text-decoration: none; border-radius: 5px; }
+        .btn.logout { background-color: red; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Bienvenido, {{ user.username }}</h2>
+
+        {% if es_admin %}
+            <a href="{% url 'admin_dashboard' %}" class="btn">Panel de Administración</a>
+        {% else %}
+            <a href="{% url 'empleado_dashboard' %}" class="btn">Panel de Empleados</a>
+        {% endif %}
+
+        <a href="{% url 'logout' %}" class="btn logout">Cerrar Sesión</a>
+    </div>
+</body>
+</html>
