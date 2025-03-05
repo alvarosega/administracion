@@ -22,7 +22,4 @@ urlpatterns = [
 
     # Módulo de finanzas
     path('finanzas/', include('finanzas.urls')),  # Incluye todas las URLs de finanzas
-
-    # Página principal y paneles (vistas directas en el proyecto principal)
-    path('', include('admin_negocios.urls')),  # Incluye las URLs de la página principal y paneles
 ]

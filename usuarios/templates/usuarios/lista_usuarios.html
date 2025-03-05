@@ -1,19 +1,30 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Lista de Empleados</title>
-</head>
-<body>
-    <h2>Empleados del negocio: {{ request.user.negocio.nombre }}</h2>
-    <a href="{% url 'crear_usuario' %}">Agregar Empleado</a>
-    <ul>
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Lista de Empleados</h1>
+<a href="{% url 'crear_usuario' %}" class="btn">Agregar Empleado</a>
+
+<table>
+    <thead>
+        <tr>
+            <th>Usuario</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
         {% for empleado in empleados %}
-            <li>{{ empleado.username }} - {{ empleado.email }} 
-                <a href="{% url 'editar_usuario' empleado.id %}">Editar</a> 
-                <a href="{% url 'eliminar_usuario' empleado.id %}" onclick="return confirm('¿Seguro que deseas eliminar este empleado?')">Eliminar</a>
-            </li>
+        <tr>
+            <td>{{ empleado.username }}</td>
+            <td>{{ empleado.email }}</td>
+            <td>{{ empleado.rol }}</td>
+            <td>
+                <a href="{% url 'editar_usuario' empleado.id %}" class="btn">Editar</a>
+                <a href="{% url 'eliminar_usuario' empleado.id %}" class="btn btn-danger">Eliminar</a>
+            </td>
+        </tr>
         {% endfor %}
-    </ul>
-</body>
-</html>
+    </tbody>
+</table>
+{% endblock %}

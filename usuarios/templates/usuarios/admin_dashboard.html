@@ -1,17 +1,12 @@
-{% extends 'base.html' %}  <!-- Asegúrate de tener una plantilla base -->
+{% extends 'base.html' %}
 
 {% block content %}
 <h1>Panel de Administración</h1>
-<p>Bienvenido, {{ request.user.username }} (Administrador)</p>
+<p>Bienvenido, {{ user.username }} (Administrador)</p>
 
 <div class="dashboard-options">
-    <a href="{% url 'lista_usuarios' %}" class="btn btn-primary">
-        Ver Lista de Empleados
-    </a>
-    <a href="{% url 'crear_usuario' %}" class="btn btn-success">
-        Agregar Nuevo Empleado
-    </a>
-    <!-- Agrega más opciones según sea necesario -->
+    <a href="{% url 'lista_usuarios' %}" class="btn">Gestionar Empleados</a>
+    <a href="{% url 'lista_productos' %}" class="btn">Gestionar Productos</a>
+    <a href="{% url 'lista_finanzas' %}" class="btn">Ver Finanzas</a>
 </div>
-
 {% endblock %}

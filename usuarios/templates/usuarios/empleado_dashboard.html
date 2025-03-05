@@ -1,12 +1,10 @@
-{% extends 'base.html' %}  <!-- Asegúrate de tener una plantilla base -->
+{% extends 'base.html' %}
 
 {% block content %}
-<h1>Panel de Empleado</h1>
-<p>Bienvenido, {{ request.user.username }} (Empleado)</p>
+<h1>Panel de Empleados</h1>
+<p>Bienvenido, {{ user.username }} (Empleado)</p>
 
 <div class="dashboard-options">
-    <p>Aquí puedes ver tus tareas asignadas, horarios y otra información relevante.</p>
-    <!-- Agrega más contenido según sea necesario -->
+    <a href="{% url 'registrar_venta' %}" class="btn">Registrar Venta</a>
 </div>
-
-{% endblock %}
+{% endblock %} 
