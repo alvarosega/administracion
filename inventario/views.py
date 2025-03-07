@@ -179,6 +179,7 @@ def registrar_venta(request, lote_id):
     if lote.producto.negocio != request.user.negocio:
         return redirect('lista_productos')
 
+    # Validar rol
     if request.user.rol not in ['admin', 'empleado']:
         return redirect('lista_productos')
 
@@ -187,6 +188,11 @@ def registrar_venta(request, lote_id):
         if form.is_valid():
             cantidad_vendida = form.cleaned_data['cantidad']
             comentario = form.cleaned_data['comentario']
+
+            # VALIDACIÓN: No se puede vender más de lo que hay en el lote
+            if cantidad_vendida > lote.cantidad:
+                messages.error(request, f"La venta excede el stock disponible ({lote.cantidad} unidades).")
+                return redirect('registrar_venta', lote_id=lote.id)
 
             # Crear movimiento de inventario
             movimiento = MovimientoInventario.objects.create(
@@ -209,6 +215,7 @@ def registrar_venta(request, lote_id):
     })
 
 
+
 # --- HISTORIAL DE MOVIMIENTOS ---
 
 @login_required
@@ -223,14 +230,11 @@ def movimientos_inventario(request):
 
 
 # --- IMPORTAR INVENTARIO (CSV) ---
+import csv
+import io
 
 @login_required
 def importar_inventario(request):
-    """
-    El admin sube un CSV para crear/actualizar productos y lotes en masa.
-    Formato CSV sugerido:
-    nombre, tipo_producto, descripcion, precio_compra, precio_venta, stock_minimo, cantidad, fecha_vencimiento
-    """
     if request.user.rol != 'admin':
         return redirect('lista_productos')
 
@@ -240,22 +244,32 @@ def importar_inventario(request):
             archivo = request.FILES['archivo']
             data_set = archivo.read().decode('UTF-8')
             io_string = io.StringIO(data_set)
-            csv_reader = csv.reader(io_string, delimiter=',')
+            # Importante: usar el mismo delimitador que se usó al descargar el archivo
+            csv_reader = csv.reader(io_string, delimiter=';')
 
-            # Saltear encabezado si lo tiene
-            # next(csv_reader, None)
+            # Función para convertir a float o 0 si está vacío
+            def to_float(value):
+                if value == '' or value.lower() == 'null':
+                    return 0.0
+                return float(value)
 
+            encabezado = True
             for fila in csv_reader:
+                # Saltar la fila de encabezado
+                if encabezado:
+                    encabezado = False
+                    continue
+
                 try:
                     # fila => [nombre, tipo_producto, descripcion, precio_compra, precio_venta, stock_minimo, cantidad, fecha_vencimiento]
                     nombre = fila[0]
                     tipo_producto = fila[1]
                     descripcion = fila[2]
-                    precio_compra = float(fila[3])
-                    precio_venta = float(fila[4])
-                    stock_minimo = int(fila[5])
-                    cantidad = int(fila[6])
-                    fecha_venc = fila[7] if fila[7] else None
+                    precio_compra = to_float(fila[3])
+                    precio_venta = to_float(fila[4])
+                    stock_minimo = int(fila[5]) if fila[5] not in ('', 'null') else 0
+                    cantidad = int(fila[6]) if fila[6] not in ('', 'null') else 0
+                    fecha_venc = fila[7].strip().lower() if len(fila) > 7 else ''
 
                     # Crear o actualizar Producto
                     producto, creado = Producto.objects.get_or_create(
@@ -283,7 +297,11 @@ def importar_inventario(request):
                         producto=producto,
                         cantidad=cantidad
                     )
-                    if fecha_venc:
+
+                    # Si la fecha no está vacía ni es 'null', asignarla
+                    if fecha_venc and fecha_venc != 'null':
+                        # Convertir fecha_venc a DateField si es necesario
+                        # Asumiendo que viene en formato YYYY-MM-DD
                         lote.fecha_vencimiento = fecha_venc
                         lote.save()
 
@@ -300,24 +318,31 @@ def importar_inventario(request):
 
 
 import csv
+from django.shortcuts import redirect
 from django.http import HttpResponse
 
 def descargar_plantilla_inventario(request):
-    """
-    Genera y devuelve una plantilla CSV o Excel con columnas listas.
-    """
     if request.user.rol != 'admin':
-        # Opcionalmente, redirige o lanza error si no es admin
         return redirect('lista_productos')
 
-    # EJEMPLO DE CSV:
     response = HttpResponse(
         content_type='text/csv',
         headers={'Content-Disposition': 'attachment; filename="plantilla_inventario.csv"'},
     )
 
-    writer = csv.writer(response)
-    # Escribe la fila de encabezados que esperas en tu importación
-    writer.writerow(['nombre', 'tipo_producto', 'descripcion', 'precio_compra', 'precio_venta', 'stock_minimo', 'cantidad', 'fecha_vencimiento'])
+    # Usar delimitador ';' para Excel en español
+    # Ejemplo de descarga con ';'
+    writer = csv.writer(response, delimiter=';', quotechar='"')
+    writer.writerow([
+        'nombre',
+        'tipo_producto',
+        'descripcion',
+        'precio_compra',
+        'precio_venta',
+        'stock_minimo',
+        'cantidad',
+        'fecha_vencimiento'
+    ])
+
 
     return response
