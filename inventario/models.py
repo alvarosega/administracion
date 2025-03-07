@@ -1,103 +1,95 @@
+# inventario/models.py
+
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-class Negocio(models.Model):
-    nombre = models.CharField(max_length=255, unique=True)
-
-    def __str__(self):
-        return self.nombre
-
+from django.conf import settings  # Para referenciar al modelo Usuario
+from django.utils import timezone
 
 class Producto(models.Model):
-    negocio = models.ForeignKey(Negocio, on_delete=models.CASCADE)
-    nombre = models.CharField(max_length=255)
-    tipo_producto = models.CharField(max_length=255)
-    descripcion = models.TextField(blank=True, null=True)
-    precio_compra = models.DecimalField(max_digits=10, decimal_places=2)
-    precio_venta = models.DecimalField(max_digits=10, decimal_places=2)
-    stock_actual = models.DecimalField(max_digits=10, decimal_places=2)
-    stock_minimo = models.DecimalField(max_digits=10, decimal_places=2)
+    negocio = models.CharField(max_length=150, null=False, blank=False)
+    nombre = models.CharField(max_length=150)
+    tipo_producto = models.CharField(max_length=100, blank=True)
+    descripcion = models.TextField(blank=True)
+    precio_compra = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    precio_venta = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    stock_minimo = models.PositiveIntegerField(default=0)  # Para alertas
+    permitir_stock_negativo = models.BooleanField(default=False)  # Admin decide
+
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.nombre} - {self.negocio.nombre}"
-    
-    
+        return f"{self.nombre} ({self.negocio})"
+
+    @property
+    def stock_total(self):
+        """
+        Suma la cantidad de todos los lotes activos para obtener el stock total del producto.
+        """
+        lotes = self.lote_set.all()  # Relación inversa
+        return sum(l.cantidad for l in lotes)
+
+    def alerta_stock_minimo(self):
+        """
+        Retorna True si el stock total es menor que stock_minimo.
+        """
+        return self.stock_total < self.stock_minimo
+
+
+class Lote(models.Model):
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    cantidad = models.PositiveIntegerField(default=0)
+    fecha_vencimiento = models.DateField(null=True, blank=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Lote de {self.producto.nombre} - Cantidad: {self.cantidad}"
 
 
 class MovimientoInventario(models.Model):
-    negocio = models.ForeignKey(Negocio, on_delete=models.CASCADE)
+    TIPO_CHOICES = [
+        ('VENTA', 'Venta'),
+        ('COMPRA', 'Compra'),
+        ('AJUSTE', 'Ajuste'),
+        ('MERMA', 'Merma'),
+    ]
+
+    negocio = models.CharField(max_length=150)
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
-    tipo = models.CharField(choices=[('entrada', 'Entrada'), ('salida', 'Salida')], max_length=10)
-    cantidad = models.DecimalField(max_digits=10, decimal_places=2)
-    usuario = models.ForeignKey('usuarios.Usuario', on_delete=models.SET_NULL, null=True)
+    lote = models.ForeignKey(Lote, on_delete=models.CASCADE, null=True, blank=True)
+    tipo_movimiento = models.CharField(max_length=20, choices=TIPO_CHOICES)
+    cantidad = models.IntegerField()  # Puede ser negativo o positivo
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,  # Apunta al modelo Usuario
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    comentario = models.TextField(blank=True)
     fecha_movimiento = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.tipo_movimiento} - {self.producto.nombre} ({self.cantidad})"
+
     def save(self, *args, **kwargs):
-        if self.tipo == 'salida' and self.producto.stock_actual < self.cantidad:
-            raise ValueError("No hay suficiente stock disponible.")
+        """
+        Al guardar un movimiento, actualiza el lote correspondiente (si existe)
+        y controla si se permite stock negativo o no.
+        """
+        super().save(*args, **kwargs)  # Guardar primero para tener el ID
 
-        # Actualizar stock del producto
-        if self.tipo == 'entrada':
-            self.producto.stock_actual += self.cantidad
-        elif self.tipo == 'salida':
-            self.producto.stock_actual -= self.cantidad
+        if self.lote:
+            lote = self.lote
+            nuevo_stock = lote.cantidad
 
-        self.producto.save()
-        super().save(*args, **kwargs)
+            if self.tipo_movimiento in ['VENTA', 'MERMA']:
+                nuevo_stock -= self.cantidad
+            elif self.tipo_movimiento in ['COMPRA', 'AJUSTE']:
+                nuevo_stock += self.cantidad
 
-    def __str__(self):
-        return f"{self.tipo} - {self.producto.nombre} ({self.cantidad})"
+            # Verificar si se permite stock negativo
+            if not self.producto.permitir_stock_negativo and nuevo_stock < 0:
+                # En caso de que no se permita, forzamos a 0 o lanzamos error
+                nuevo_stock = 0
 
-
-# 🚀 Automatizar ingresos y egresos después de un movimiento de inventario
-@receiver(post_save, sender=MovimientoInventario)
-def generar_ingreso_egreso(sender, instance, created, **kwargs):
-    if created:  # Solo ejecutamos esto cuando se crea un nuevo movimiento
-        from finanzas.models import IngresoEgreso
-        
-        if instance.tipo == 'salida':  # Venta -> Ingreso
-            IngresoEgreso.objects.create(
-                negocio=instance.negocio,
-                tipo='ingreso',
-                monto=instance.cantidad * instance.producto.precio_venta,
-                usuario=instance.usuario,
-                movimiento_inventario=instance
-            )
-        elif instance.tipo == 'entrada':  # Compra -> Egreso
-            IngresoEgreso.objects.create(
-                negocio=instance.negocio,
-                tipo='egreso',
-                monto=instance.cantidad * instance.producto.precio_compra,
-                usuario=instance.usuario,
-                movimiento_inventario=instance
-            )
-
-
-class Proveedor(models.Model):
-    negocio = models.ForeignKey(Negocio, on_delete=models.CASCADE)
-    nombre = models.CharField(max_length=255)
-    telefono = models.CharField(max_length=20, blank=True, null=True)
-    correo = models.EmailField(blank=True, null=True)
-    direccion = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return self.nombre
-
-
-def actualizar_stock(self):
-    if self.tipo == 'entrada':
-        self.producto.stock_actual += self.cantidad
-    elif self.tipo == 'salida':
-        self.producto.stock_actual -= self.cantidad
-
-    self.producto.save()
-
-
-
-def save(self, *args, **kwargs):
-    if self.tipo == 'salida' and self.producto.stock_actual < self.cantidad:
-        raise ValueError("No hay suficiente stock disponible.")
-
-    self.actualizar_stock()
-    super().save(*args, **kwargs)
+            lote.cantidad = nuevo_stock
+            lote.save()

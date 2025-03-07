@@ -2,10 +2,10 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Formulario de Producto</title>
+    <title>Importar Inventario CSV</title>
 </head>
 <body>
-    <h1>{% if form.instance.id %}Editar{% else %}Crear{% endif %} Producto</h1>
+    <h1>Importar Inventario (CSV)</h1>
 
     {% if messages %}
         <ul style="color:red;">
@@ -15,10 +15,10 @@
         </ul>
     {% endif %}
 
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Guardar</button>
+        <button type="submit">Importar</button>
         <a href="{% url 'lista_productos' %}">Cancelar</a>
     </form>
 </body>

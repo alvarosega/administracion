@@ -1,12 +1,16 @@
-{% extends 'base.html' %}
+<!-- usuarios/templates/usuarios/admin_dashboard.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Administrador</title>
+</head>
+<body>
+    <h1>Panel de Administrador</h1>
+    <p>Bienvenido, {{ request.user.username }}</p>
+    <p>Negocio: {{ request.user.negocio }}</p>
 
-{% block content %}
-<h1>Panel de Administración</h1>
-<p>Bienvenido, {{ user.username }} (Administrador)</p>
-
-<div class="dashboard-options">
-    <a href="{% url 'lista_usuarios' %}" class="btn">Gestionar Empleados</a>
-    <a href="{% url 'lista_productos' %}" class="btn">Gestionar Productos</a>
-    <a href="{% url 'lista_finanzas' %}" class="btn">Ver Finanzas</a>
-</div>
-{% endblock %}
+    <p><a href="{% url 'lista_usuarios' %}">Gestionar Usuarios</a></p>
+    <p><a href="/">Volver a Inicio</a></p>
+</body>
+</html>

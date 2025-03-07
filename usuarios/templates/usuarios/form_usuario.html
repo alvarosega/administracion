@@ -1,0 +1,29 @@
+<!-- usuarios/templates/usuarios/form_usuario.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if form.instance.id %}Editar{% else %}Crear{% endif %} Usuario</title>
+</head>
+<body>
+    <h1>{% if form.instance.id %}Editar{% else %}Crear{% endif %} Usuario</h1>
+
+    {% if messages %}
+        <ul style="color:red;">
+            {% for msg in messages %}
+                <li>{{ msg }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit">
+            {% if form.instance.id %}Actualizar{% else %}Guardar{% endif %}
+        </button>
+        <a href="{% url 'lista_usuarios' %}">Cancelar</a>
+    </form>
+</body>
+</html>

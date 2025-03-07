@@ -1,10 +1,15 @@
-{% extends 'base.html' %}
+<!-- usuarios/templates/usuarios/empleado_dashboard.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Empleado</title>
+</head>
+<body>
+    <h1>Panel de Empleado</h1>
+    <p>Bienvenido, {{ request.user.username }}</p>
+    <p>Negocio: {{ request.user.negocio }}</p>
 
-{% block content %}
-<h1>Panel de Empleados</h1>
-<p>Bienvenido, {{ user.username }} (Empleado)</p>
-
-<div class="dashboard-options">
-    <a href="{% url 'registrar_venta' %}" class="btn">Registrar Venta</a>
-</div>
-{% endblock %} 
+    <p><a href="/">Volver a Inicio</a></p>
+</body>
+</html>

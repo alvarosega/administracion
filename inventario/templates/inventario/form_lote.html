@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if form.instance.id %}Editar{% else %}Crear{% endif %} Lote</title>
+</head>
+<body>
+    <h1>{% if form.instance.id %}Editar{% else %}Crear{% endif %} Lote</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Guardar</button>
+        <a href="{% url 'lista_lotes' producto.id %}">Cancelar</a>
+    </form>
+</body>
+</html>

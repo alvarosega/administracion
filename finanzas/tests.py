@@ -1,3 +1,3 @@
-from django.test import TestCase
+# finanzas/tests.py
 
-# Create your tests here.
+# Sin tests aún

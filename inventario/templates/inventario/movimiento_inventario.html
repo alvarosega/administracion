@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Movimientos de Inventario</title>
+</head>
+<body>
+    <h1>Historial de Movimientos (Negocio: {{ request.user.negocio }})</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Usuario</th>
+                <th>Fecha</th>
+                <th>Comentario</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in movimientos %}
+            <tr>
+                <td>{{ m.tipo_movimiento }}</td>
+                <td>{{ m.producto.nombre }}</td>
+                <td>{{ m.cantidad }}</td>
+                <td>{% if m.usuario %}{{ m.usuario.username }}{% endif %}</td>
+                <td>{{ m.fecha_movimiento }}</td>
+                <td>{{ m.comentario }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

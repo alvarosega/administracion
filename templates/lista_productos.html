@@ -5,16 +5,12 @@
     <title>Productos</title>
 </head>
 <body>
-    <!-- Corregimos el título y añadimos un enlace para descargar la plantilla -->
     <h1>Lista de Productos (Negocio: {{ request.user.negocio }})</h1>
 
     {% if request.user.rol == 'admin' %}
         <p><a href="{% url 'crear_producto' %}">Crear Producto</a></p>
         <p><a href="{% url 'importar_inventario' %}">Importar CSV</a></p>
-        <!-- NUEVA LÍNEA: enlace para descargar la plantilla de Excel/CSV -->
-        <p><a href="{% url 'descargar_plantilla_inventario' %}">Descargar Plantilla Excel</a></p>
     {% endif %}
-
 
     {% if messages %}
         <ul style="color:green;">

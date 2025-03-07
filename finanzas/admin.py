@@ -1,11 +1,3 @@
-from django.contrib import admin
-from .models import IngresoEgreso
+# finanzas/admin.py
 
-class IngresoEgresoAdmin(admin.ModelAdmin):
-    def has_delete_permission(self, request, obj=None):
-        return request.user.is_superuser  # Solo superusuarios pueden eliminar
-
-    def has_change_permission(self, request, obj=None):
-        return request.user.is_superuser  # Solo superusuarios pueden modificar
-
-admin.site.register(IngresoEgreso, IngresoEgresoAdmin)
+# No hay modelos para registrar

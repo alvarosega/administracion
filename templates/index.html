@@ -1,15 +1,41 @@
+<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel Principal</title>
+    <title>Página Principal</title>
 </head>
 <body>
-    <h1>Bienvenido, {{ request.user.username }}</h1>
-    {% if es_admin %}
-        <p>Eres un administrador.</p>
+    <h1>Bienvenido a la Plataforma Principal</h1>
+
+    {% if user.is_authenticated %}
+        <p>
+            ¡Hola, <strong>{{ user.username }}</strong>!<br>
+            Tu rol es: <strong>{{ user.rol }}</strong> <br>
+            Negocio: <strong>{{ user.negocio }}</strong>
+        </p>
+
+        <!-- Botón para cerrar sesión vía POST -->
+        <form action="{% url 'logout' %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Cerrar Sesión</button>
+        </form>
+
+        <hr>
+        <!-- Opcional: Links manuales a paneles si el usuario desea -->
+        {% if user.rol == 'admin' %}
+            <p><a href="{% url 'admin_dashboard' %}">Ir al Panel de Administrador</a></p>
+            <p><a href="{% url 'lista_usuarios' %}">Gestionar Usuarios</a></p>
+            <p><a href="{% url 'lista_productos' %}">Ir a Inventario</a></p>  <!-- NUEVO ENLACE -->
+
+        {% elif user.rol == 'empleado' %}
+            <p><a href="{% url 'empleado_dashboard' %}">Ir al Panel de Empleado</a></p>
+            <p><a href="{% url 'lista_productos' %}">Ir a Inventario</a></p>  <!-- NUEVO ENLACE -->
+        {% endif %}
     {% else %}
-        <p>Eres un empleado.</p>
+        <p>
+            <a href="{% url 'login' %}">Iniciar Sesión</a>
+        </p>
     {% endif %}
 </body>
 </html>

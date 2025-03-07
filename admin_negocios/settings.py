@@ -34,7 +34,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',  # Verifica que esto esté presente
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -131,7 +131,9 @@ ADMIN_URL = "gestion/"
 # Configurar la URL de inicio de sesión personalizada
 LOGIN_URL = '/login/'  # URL correcta del login
 LOGIN_REDIRECT_URL = 'index'  # Redirigir al nombre de la URL 'index' después del login
-LOGOUT_REDIRECT_URL = 'login'  # Redirigir al login después del logout
+# Redirigir al index tras hacer logout
+LOGOUT_REDIRECT_URL = '/'
+
 
 
 AUTH_USER_MODEL = 'usuarios.Usuario'

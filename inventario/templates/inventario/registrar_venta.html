@@ -2,10 +2,10 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Formulario de Producto</title>
+    <title>Registrar Venta</title>
 </head>
 <body>
-    <h1>{% if form.instance.id %}Editar{% else %}Crear{% endif %} Producto</h1>
+    <h1>Registrar Venta - Lote {{ lote.id }} de {{ lote.producto.nombre }}</h1>
 
     {% if messages %}
         <ul style="color:red;">
@@ -18,8 +18,8 @@
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Guardar</button>
-        <a href="{% url 'lista_productos' %}">Cancelar</a>
+        <button type="submit">Vender</button>
+        <a href="{% url 'lista_lotes' lote.producto.id %}">Cancelar</a>
     </form>
 </body>
 </html>
