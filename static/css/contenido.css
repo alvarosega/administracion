@@ -1,0 +1,322 @@
+/* =========================================================
+   CSS UNIFICADO PARA LOS HTML DE LA APLICACIÓN
+   ---------------------------------------------------------
+   - Autor: Tu Equipo
+   - Fecha: (Completa con la fecha actual)
+   - Descripción:
+     Este archivo agrupa los estilos generales para
+     las plantillas dadas, siguiendo la paleta de colores:
+       1) #F3F3E0
+       2) #133E87
+       3) #608BC1
+       4) #CBDCEB
+     Y utilizando la tipografía "Century Gothic".
+
+   - Requisitos cumplidos:
+     1) Paleta de colores: #F3F3E0, #133E87, #608BC1, #CBDCEB
+     2) Tipografía Century Gothic
+     3) Completamente responsive
+     4) Un solo archivo, segmentado internamente con comentarios
+     5) Incluye animaciones (fade-in, hover effects, etc.)
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   RESETEO BÁSICO Y CONFIGURACIÓN DE FUENTE
+   --------------------------------------------------------- */
+   * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  html, body {
+    font-family: "Century Gothic", sans-serif;
+    background-color: #F3F3E0; /* Color de fondo general */
+    color: #133E87;           /* Color de texto principal */
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* ---------------------------------------------------------
+     ANIMACIONES (KEYFRAMES)
+     --------------------------------------------------------- */
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes buttonHover {
+    0% {
+      background-color: #133E87;
+      transform: scale(1);
+    }
+    50% {
+      background-color: #608BC1;
+      transform: scale(1.02);
+    }
+    100% {
+      background-color: #133E87;
+      transform: scale(1);
+    }
+  }
+  
+  /* ---------------------------------------------------------
+     CONTENEDOR PRINCIPAL DE SECCIONES DE ADMIN (admin-dashboard)
+     --------------------------------------------------------- */
+  .admin-dashboard {
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  
+    /* Animación de aparición */
+    animation: fadeInUp 0.8s ease-in-out;
+  }
+  
+  /* ---------------------------------------------------------
+     TITULOS Y SUBTÍTULOS
+     --------------------------------------------------------- */
+  .admin-title {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+  }
+  
+  .admin-subtitle {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    color: #608BC1;
+  }
+  
+  /* ---------------------------------------------------------
+     MENSAJES (errores, avisos, etc.)
+     --------------------------------------------------------- */
+  .admin-messages {
+    list-style: none;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #CBDCEB; /* color de fondo suave */
+    border-left: 5px solid #133E87;
+    border-radius: 5px;
+  }
+  
+  .admin-messages li {
+    margin-bottom: 5px;
+  }
+  
+  /* ---------------------------------------------------------
+     FORMULARIOS (admin-form)
+     --------------------------------------------------------- */
+  .admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* espacio entre elementos del form */
+  }
+  
+  .admin-label {
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .admin-input {
+    padding: 8px 10px;
+    border: 1px solid #CBDCEB;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  
+  .admin-filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .admin-total {
+    margin: 10px 0;
+    font-size: 1rem;
+  }
+  
+  /* Divisor para separar secciones */
+  .admin-divider {
+    border: 0;
+    height: 1px;
+    background-color: #CBDCEB;
+    margin: 20px 0;
+  }
+  
+  /* ---------------------------------------------------------
+     BOTONES (admin-button, admin-button-cancel, etc.)
+     --------------------------------------------------------- */
+  .admin-button {
+    display: inline-block;
+    padding: 10px 15px;
+    margin: 5px 0;
+    background-color: #133E87; /* color principal */
+    color: #FFFFFF;
+    text-decoration: none;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .admin-button:hover {
+    background-color: #608BC1; /* cambio de color al hover */
+  }
+  
+  .admin-button-cancel {
+    background-color: #CBDCEB; /* color más claro para "cancelar" */
+    color: #133E87;
+  }
+  
+  .admin-button-cancel:hover {
+    background-color: #608BC1; 
+    color: #FFFFFF;
+  }
+  
+  .admin-button-export {
+    background-color: #608BC1; 
+    color: #FFFFFF;
+  }
+  
+  .admin-button-export:hover {
+    background-color: #133E87; 
+  }
+  
+  /* ---------------------------------------------------------
+     TABLAS (admin-table) Y RESPUESTAS ADAPTATIVAS (table-responsive)
+     --------------------------------------------------------- */
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto; /* permite scroll horizontal en pantallas pequeñas */
+  }
+  
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  .admin-table-header {
+    background-color: #133E87; /* color encabezado */
+    color: #FFFFFF;
+    text-align: left;
+    padding: 10px;
+    font-weight: bold;
+  }
+  
+  .admin-table-row:nth-child(even) {
+    background-color: #CBDCEB; /* filas pares de otro color */
+  }
+  
+  .admin-table-data {
+    padding: 10px;
+    border-bottom: 1px solid #F3F3E0;
+  }
+  
+  .admin-table-row:hover {
+    background-color: #F3F3E0;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  /* ---------------------------------------------------------
+     ENLACES (admin-link, admin-link-sm, admin-link-danger, etc.)
+     --------------------------------------------------------- */
+  .admin-link-sm {
+    color: #133E87;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  
+  .admin-link-sm:hover {
+    text-decoration: underline;
+  }
+  
+  .admin-link-danger {
+    color: #b30000; /* tono de rojo para resaltar "peligro" */
+  }
+  
+  .admin-link {
+    padding: 10px 15px;
+    background-color: #133E87;
+    color: #FFFFFF;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .admin-link:hover {
+    background-color: #608BC1;
+  }
+  
+  .admin-cancel {
+    background-color: #CBDCEB;
+    color: #133E87;
+  }
+  
+  .admin-cancel:hover {
+    background-color: #608BC1;
+    color: #FFFFFF;
+  }
+  
+  /* ---------------------------------------------------------
+     ALERTAS Y ESTADOS (admin-alert)
+     --------------------------------------------------------- */
+  .admin-alert {
+    color: #b30000;   /* resaltado en rojo */
+    font-weight: bold;
+  }
+  
+  /* ---------------------------------------------------------
+     SECCIÓN DE ENLACES PARA ADMIN (admin-links)
+     --------------------------------------------------------- */
+  .admin-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  /* ---------------------------------------------------------
+     MEDIA QUERIES (Diseño Responsive)
+     --------------------------------------------------------- */
+  /* Ajustes para pantallas pequeñas */
+  @media (max-width: 768px) {
+    .admin-form {
+      gap: 10px;
+    }
+  
+    .admin-filter-form {
+      flex-direction: column;
+    }
+  
+    .admin-dashboard {
+      margin: 10px;
+      padding: 15px;
+    }
+  
+    .admin-title {
+      font-size: 1.4rem;
+    }
+  
+    .admin-button {
+      font-size: 0.85rem;
+      padding: 8px 10px;
+    }
+  
+    .admin-link, .admin-link-sm {
+      font-size: 0.85rem;
+      padding: 8px 10px;
+    }
+  }
+  

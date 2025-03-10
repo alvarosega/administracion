@@ -1,25 +1,34 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Importar Inventario CSV</title>
-</head>
-<body>
-    <h1>Importar Inventario (CSV)</h1>
+{% extends 'base.html' %}
+{% load static %}
 
-    {% if messages %}
-        <ul style="color:red;">
-            {% for msg in messages %}
-                <li>{{ msg }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+{% block title %}Importar Inventario CSV{% endblock %}
 
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Importar</button>
-        <a href="{% url 'lista_productos' %}">Cancelar</a>
-    </form>
-</body>
-</html>
+{% block content %}
+<div class="admin-dashboard">
+  <h1 class="admin-title">Importar Inventario (CSV)</h1>
+
+  <!-- Mensajes de error o notificación -->
+  {% if messages %}
+    <ul class="admin-messages">
+      {% for msg in messages %}
+        <li>{{ msg }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <form method="post" enctype="multipart/form-data" class="admin-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <!-- Botón "Importar" -->
+    <button type="submit" class="admin-button">
+      Importar
+    </button>
+
+    <!-- Enlace "Cancelar" -->
+    <a href="{% url 'lista_productos' %}" class="admin-button admin-button-cancel">
+      Cancelar
+    </a>
+  </form>
+</div>
+{% endblock %}

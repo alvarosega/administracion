@@ -1,0 +1,210 @@
+/* =========================
+   CARD GRID LAYOUT
+   (Más grande, centrado)
+========================= */
+.card-grid {
+    /* Centra el grid y limita el ancho máximo */
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    /* Ajusta las columnas según el espacio disponible */
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 30px;             /* Espacio entre tarjetas */
+    align-items: start;
+    justify-items: center; /* Centra cada tarjeta en su columna */
+    padding: 20px 0;       /* Espacio vertical */
+  }
+  
+  /* =========================
+     TARJETA (ENLACE)
+  ========================= */
+  .card-link {
+    display: flex;
+    flex-direction: column;  /* Ícono arriba, texto abajo */
+    align-items: center;     /* Centra ícono y texto */
+    text-decoration: none;   /* Quitar subrayado en el enlace */
+    background-color: #fff;  /* Fondo blanco */
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 30px;           /* Aumentamos el padding para más espacio */
+    transition: transform 0.2s, box-shadow 0.2s;
+    color: #000;             /* Color del texto */
+  }
+  
+  .card-link:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  }
+  
+  /* =========================
+     ÍCONO DENTRO DE LA TARJETA
+  ========================= */
+  .card-icon {
+    width: 80px;    /* Ícono más grande */
+    height: 80px;
+    margin-bottom: 12px;
+    object-fit: contain; /* Mantiene proporciones sin deformar */
+  }
+  
+  /* =========================
+     TÍTULO DENTRO DE LA TARJETA
+  ========================= */
+  .card-title {
+    font-size: 1.2rem; /* Texto un poco más grande */
+    font-weight: 600;
+    text-align: center;
+    margin: 0;
+    margin-top: 8px;
+  }
+  
+  /* =========================
+     RESPONSIVE
+  ========================= */
+  /* Pantallas muy pequeñas */
+  @media (max-width: 576px) {
+    /* Una sola columna en móviles */
+    .card-grid {
+      grid-template-columns: 1fr;
+    }
+    /* Ajustamos padding y tamaño de íconos */
+    .card-link {
+      padding: 20px;
+    }
+    .card-icon {
+      width: 64px;
+      height: 64px;
+    }
+    .card-title {
+      font-size: 1rem;
+    }
+  }
+  /* =========================
+   EXTRA PEQUEÑAS (max-width: 576px)
+   Ej: teléfonos muy pequeños
+========================= */
+@media (max-width: 576px) {
+    /* Grid: 1 sola columna */
+    .card-grid {
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+  
+    /* Tarjeta: reduce padding */
+    .card-link {
+      padding: 15px;
+    }
+  
+    /* Ícono: más pequeño */
+    .card-icon {
+      width: 50px;
+      height: 50px;
+    }
+  
+    /* Título: ajusta tamaño de fuente */
+    .card-title {
+      font-size: 1rem;
+    }
+  }
+  
+  /* =========================
+     PEQUEÑAS (max-width: 768px)
+     Ej: tablets en vertical
+  ========================= */
+  @media (max-width: 768px) {
+    /* Grid: columnas un poco más pequeñas */
+    .card-grid {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 20px;
+    }
+  
+    .card-link {
+      padding: 20px;
+    }
+  
+    .card-icon {
+      width: 60px;
+      height: 60px;
+    }
+  
+    .card-title {
+      font-size: 1.05rem;
+    }
+  }
+  
+  /* =========================
+     MEDIANAS (max-width: 992px)
+     Ej: tablets en horizontal o pantallas intermedias
+  ========================= */
+  @media (max-width: 992px) {
+    /* Grid: ligeramente más grande que la versión para 768 */
+    .card-grid {
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 25px;
+    }
+  
+    .card-link {
+      padding: 25px;
+    }
+  
+    .card-icon {
+      width: 70px;
+      height: 70px;
+    }
+  
+    .card-title {
+      font-size: 1.1rem;
+    }
+  }
+  
+  /* =========================
+     GRANDES (max-width: 1200px)
+     Ej: laptops de 13"-15"
+  ========================= */
+  @media (max-width: 1200px) {
+    /* Grid: aquí puedes mantener la misma configuración 
+       o ajustarla un poco más */
+    .card-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 30px;
+    }
+  
+    .card-link {
+      padding: 30px;
+    }
+  
+    .card-icon {
+      width: 80px;
+      height: 80px;
+    }
+  
+    .card-title {
+      font-size: 1.15rem;
+    }
+  }
+  
+  /* =========================
+     EXTRAS (min-width: 1201px)
+     Ej: pantallas muy grandes
+  ========================= */
+  @media (min-width: 1201px) {
+    /* Aquí puedes dar un estilo para pantallas muy grandes */
+    .card-grid {
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 35px;
+    }
+  
+    .card-link {
+      padding: 35px;
+    }
+  
+    .card-icon {
+      width: 90px;
+      height: 90px;
+    }
+  
+    .card-title {
+      font-size: 1.2rem;
+    }
+  }
+  

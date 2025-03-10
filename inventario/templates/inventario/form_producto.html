@@ -1,25 +1,36 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Formulario de Producto</title>
-</head>
-<body>
-    <h1>{% if form.instance.id %}Editar{% else %}Crear{% endif %} Producto</h1>
+{% extends 'base.html' %}
+{% load static %}
 
-    {% if messages %}
-        <ul style="color:red;">
-            {% for msg in messages %}
-                <li>{{ msg }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+{% block title %}
+{% if form.instance.id %}Editar{% else %}Crear{% endif %} Producto
+{% endblock %}
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Guardar</button>
-        <a href="{% url 'lista_productos' %}">Cancelar</a>
-    </form>
-</body>
-</html>
+{% block content %}
+<div class="admin-dashboard">
+  <h1 class="admin-title">{% if form.instance.id %}Editar{% else %}Crear{% endif %} Producto</h1>
+
+  {% if messages %}
+    <!-- Muestra mensajes de error o notificaciones -->
+    <ul class="admin-messages">
+      {% for msg in messages %}
+        <li>{{ msg }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <form method="post" class="admin-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <!-- Botón "Guardar" -->
+    <button type="submit" class="admin-button">
+      Guardar
+    </button>
+
+    <!-- Enlace para "Cancelar" -->
+    <a href="{% url 'lista_productos' %}" class="admin-button admin-button-cancel">
+      Cancelar
+    </a>
+  </form>
+</div>
+{% endblock %}

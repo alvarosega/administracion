@@ -1,25 +1,33 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Registrar Venta</title>
-</head>
-<body>
-    <h1>Registrar Venta - Lote {{ lote.id }} de {{ lote.producto.nombre }}</h1>
+{% extends 'base.html' %}
+{% load static %}
 
-    {% if messages %}
-        <ul style="color:red;">
-            {% for msg in messages %}
-                <li>{{ msg }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+{% block title %}Registrar Venta{% endblock %}
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Vender</button>
-        <a href="{% url 'lista_lotes' lote.producto.id %}">Cancelar</a>
-    </form>
-</body>
-</html>
+{% block content %}
+<div class="admin-dashboard">
+  <h1>Registrar Venta - Lote {{ lote.id }} de {{ lote.producto.nombre }}</h1>
+
+  {% if messages %}
+    <ul class="admin-messages">
+      {% for msg in messages %}
+        <li>{{ msg }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <!-- Botón "Vender" con clase de botón principal -->
+    <button type="submit" class="admin-link">
+      Vender
+    </button>
+
+    <!-- Enlace "Cancelar" con clase de botón secundario -->
+    <a href="{% url 'lista_lotes' lote.producto.id %}" class="admin-link admin-cancel">
+      Cancelar
+    </a>
+  </form>
+</div>
+{% endblock %}

@@ -1,8 +1,11 @@
-# inventario/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-import csv, io
+from django.http import HttpResponse
+from django.utils import timezone
+
+import csv
+import io
 
 from .models import Producto, Lote, MovimientoInventario
 from .forms import (
@@ -11,6 +14,9 @@ from .forms import (
     RegistrarVentaForm,
     ImportarInventarioForm
 )
+
+# Importamos el modelo financiero para crear ingresos/egresos automáticos
+from finanzas.models import MovimientoFinanciero
 
 # --- VISTAS DE PRODUCTO ---
 
@@ -102,6 +108,7 @@ def lista_lotes(request, producto_id):
 def crear_lote(request, producto_id):
     """
     Solo el admin crea lotes. El empleado no puede.
+    Además, se registra un EGRESO automático en finanzas.
     """
     if request.user.rol != 'admin':
         return redirect('lista_productos')
@@ -116,7 +123,19 @@ def crear_lote(request, producto_id):
             lote = form.save(commit=False)
             lote.producto = producto
             lote.save()
-            messages.success(request, "Lote creado correctamente.")
+
+            # Registrar Egreso automático por compra de stock
+            costo_compra = lote.cantidad * producto.precio_compra
+            MovimientoFinanciero.objects.create(
+                negocio=request.user.negocio,
+                tipo='EGRESO',
+                monto=costo_compra,
+                fecha=timezone.now(),
+                descripcion=f"Compra de {lote.cantidad} uds de {producto.nombre}",
+                usuario=request.user
+            )
+
+            messages.success(request, "Lote creado y egreso registrado.")
             return redirect('lista_lotes', producto_id=producto.id)
     else:
         form = LoteForm()
@@ -129,6 +148,9 @@ def crear_lote(request, producto_id):
 
 @login_required
 def editar_lote(request, lote_id):
+    """
+    Editar un lote existente (solo admin).
+    """
     if request.user.rol != 'admin':
         return redirect('lista_productos')
 
@@ -154,6 +176,9 @@ def editar_lote(request, lote_id):
 
 @login_required
 def eliminar_lote(request, lote_id):
+    """
+    Eliminar un lote (solo admin).
+    """
     if request.user.rol != 'admin':
         return redirect('lista_productos')
 
@@ -167,19 +192,22 @@ def eliminar_lote(request, lote_id):
     return redirect('lista_lotes', producto_id=producto_id)
 
 
-# --- VISTA PARA REGISTRAR VENTAS (EMPLEADO) ---
+# --- REGISTRAR VENTAS (EMPLEADO/ADMIN) ---
 
 @login_required
 def registrar_venta(request, lote_id):
     """
-    El empleado registra una venta (salida).
+    El empleado (o admin) registra una venta (salida).
+    - No se puede vender más stock del que hay en el lote.
+    - Registra un INGRESO automático en finanzas.
     """
     lote = get_object_or_404(Lote, id=lote_id)
+
     # Validar que sea el mismo negocio
     if lote.producto.negocio != request.user.negocio:
         return redirect('lista_productos')
 
-    # Validar rol
+    # Validar rol (admin o empleado)
     if request.user.rol not in ['admin', 'empleado']:
         return redirect('lista_productos')
 
@@ -204,7 +232,21 @@ def registrar_venta(request, lote_id):
                 usuario=request.user,
                 comentario=comentario
             )
-            messages.success(request, "Venta registrada correctamente.")
+
+            # Calcular el monto de la venta
+            monto_venta = cantidad_vendida * lote.producto.precio_venta
+
+            # Registrar INGRESO automático en finanzas
+            MovimientoFinanciero.objects.create(
+                negocio=request.user.negocio,
+                tipo='INGRESO',
+                monto=monto_venta,
+                fecha=timezone.now(),
+                descripcion=f"Venta de {cantidad_vendida} uds de {lote.producto.nombre}",
+                usuario=request.user
+            )
+
+            messages.success(request, "Venta registrada correctamente (finanzas actualizadas).")
             return redirect('lista_lotes', producto_id=lote.producto.id)
     else:
         form = RegistrarVentaForm(initial={'lote_id': lote.id})
@@ -215,8 +257,7 @@ def registrar_venta(request, lote_id):
     })
 
 
-
-# --- HISTORIAL DE MOVIMIENTOS ---
+# --- HISTORIAL DE MOVIMIENTOS DE INVENTARIO ---
 
 @login_required
 def movimientos_inventario(request):
@@ -226,15 +267,19 @@ def movimientos_inventario(request):
     movs = MovimientoInventario.objects.filter(
         negocio=request.user.negocio
     ).order_by('-fecha_movimiento')
+
     return render(request, 'inventario/movimientos_inventario.html', {'movimientos': movs})
 
 
 # --- IMPORTAR INVENTARIO (CSV) ---
-import csv
-import io
 
 @login_required
 def importar_inventario(request):
+    """
+    Permite al admin subir un archivo CSV con la estructura:
+    [nombre, tipo_producto, descripcion, precio_compra, precio_venta, stock_minimo, cantidad, fecha_vencimiento]
+    para crear/actualizar productos y crear lotes.
+    """
     if request.user.rol != 'admin':
         return redirect('lista_productos')
 
@@ -244,10 +289,9 @@ def importar_inventario(request):
             archivo = request.FILES['archivo']
             data_set = archivo.read().decode('UTF-8')
             io_string = io.StringIO(data_set)
-            # Importante: usar el mismo delimitador que se usó al descargar el archivo
+            # Usar el mismo delimitador que se usó al descargar la plantilla
             csv_reader = csv.reader(io_string, delimiter=';')
 
-            # Función para convertir a float o 0 si está vacío
             def to_float(value):
                 if value == '' or value.lower() == 'null':
                     return 0.0
@@ -261,7 +305,7 @@ def importar_inventario(request):
                     continue
 
                 try:
-                    # fila => [nombre, tipo_producto, descripcion, precio_compra, precio_venta, stock_minimo, cantidad, fecha_vencimiento]
+                    # [nombre, tipo_producto, descripcion, precio_compra, precio_venta, stock_minimo, cantidad, fecha_vencimiento]
                     nombre = fila[0]
                     tipo_producto = fila[1]
                     descripcion = fila[2]
@@ -284,7 +328,7 @@ def importar_inventario(request):
                         }
                     )
                     if not creado:
-                        # Actualizar campos
+                        # Actualizar campos si el producto ya existía
                         producto.tipo_producto = tipo_producto
                         producto.descripcion = descripcion
                         producto.precio_compra = precio_compra
@@ -292,15 +336,14 @@ def importar_inventario(request):
                         producto.stock_minimo = stock_minimo
                         producto.save()
 
-                    # Crear un lote
+                    # Crear un lote con la cantidad
                     lote = Lote.objects.create(
                         producto=producto,
                         cantidad=cantidad
                     )
 
-                    # Si la fecha no está vacía ni es 'null', asignarla
+                    # Asignar fecha de vencimiento si aplica
                     if fecha_venc and fecha_venc != 'null':
-                        # Convertir fecha_venc a DateField si es necesario
                         # Asumiendo que viene en formato YYYY-MM-DD
                         lote.fecha_vencimiento = fecha_venc
                         lote.save()
@@ -317,11 +360,12 @@ def importar_inventario(request):
     return render(request, 'inventario/importar_inventario.html', {'form': form})
 
 
-import csv
-from django.shortcuts import redirect
-from django.http import HttpResponse
-
+@login_required
 def descargar_plantilla_inventario(request):
+    """
+    Descarga una plantilla CSV con las columnas necesarias
+    para importar el inventario.
+    """
     if request.user.rol != 'admin':
         return redirect('lista_productos')
 
@@ -330,8 +374,6 @@ def descargar_plantilla_inventario(request):
         headers={'Content-Disposition': 'attachment; filename="plantilla_inventario.csv"'},
     )
 
-    # Usar delimitador ';' para Excel en español
-    # Ejemplo de descarga con ';'
     writer = csv.writer(response, delimiter=';', quotechar='"')
     writer.writerow([
         'nombre',
@@ -343,6 +385,5 @@ def descargar_plantilla_inventario(request):
         'cantidad',
         'fecha_vencimiento'
     ])
-
 
     return response

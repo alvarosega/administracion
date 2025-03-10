@@ -1,41 +1,69 @@
-<!-- templates/index.html -->
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Página Principal</title>
-</head>
-<body>
-    <h1>Bienvenido a la Plataforma Principal</h1>
+{% extends 'base.html' %}
+{% load static %}
 
-    {% if user.is_authenticated %}
-        <p>
-            ¡Hola, <strong>{{ user.username }}</strong>!<br>
-            Tu rol es: <strong>{{ user.rol }}</strong> <br>
-            Negocio: <strong>{{ user.negocio }}</strong>
-        </p>
+{% block title %}Página Principal{% endblock %}
 
-        <!-- Botón para cerrar sesión vía POST -->
-        <form action="{% url 'logout' %}" method="post" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit">Cerrar Sesión</button>
-        </form>
+{% block content %}
+<h1 class="mb-3">Bienvenido a la Plataforma Principal</h1>
 
-        <hr>
-        <!-- Opcional: Links manuales a paneles si el usuario desea -->
-        {% if user.rol == 'admin' %}
-            <p><a href="{% url 'admin_dashboard' %}">Ir al Panel de Administrador</a></p>
-            <p><a href="{% url 'lista_usuarios' %}">Gestionar Usuarios</a></p>
-            <p><a href="{% url 'lista_productos' %}">Ir a Inventario</a></p>  <!-- NUEVO ENLACE -->
+{% if user.is_authenticated %}
+  <p>
+    ¡Hola, <strong>{{ user.username }}</strong>!<br>
+    Tu rol es: <strong>{{ user.rol }}</strong>
+  </p>
+  <hr>
 
-        {% elif user.rol == 'empleado' %}
-            <p><a href="{% url 'empleado_dashboard' %}">Ir al Panel de Empleado</a></p>
-            <p><a href="{% url 'lista_productos' %}">Ir a Inventario</a></p>  <!-- NUEVO ENLACE -->
-        {% endif %}
-    {% else %}
-        <p>
-            <a href="{% url 'login' %}">Iniciar Sesión</a>
-        </p>
+  <!-- Contenedor de tarjetas -->
+  <div class="card-grid">
+    {% if user.rol == 'admin' %}
+      <!-- Panel de Administrador -->
+      <a href="{% url 'admin_dashboard' %}" class="card-link">
+        <img src="{% static 'images/admin_dashboard.png' %}" alt="Admin" class="card-icon">
+        <h3 class="card-title">Panel de Administrador</h3>
+      </a>
+
+      <!-- Gestionar Usuarios -->
+      <a href="{% url 'lista_usuarios' %}" class="card-link">
+        <img src="{% static 'images/usuarios.png' %}" alt="Usuarios" class="card-icon">
+        <h3 class="card-title">Gestionar Usuarios</h3>
+      </a>
+
+      <!-- Inventario -->
+      <a href="{% url 'lista_productos' %}" class="card-link">
+        <img src="{% static 'images/inventario.png' %}" alt="Inventario" class="card-icon">
+        <h3 class="card-title">Inventario</h3>
+      </a>
+
+      <!-- Finanzas -->
+      <a href="{% url 'resumen_financiero' %}" class="card-link">
+        <img src="{% static 'images/finanzas.png' %}" alt="Finanzas" class="card-icon">
+        <h3 class="card-title">Finanzas</h3>
+      </a>
+
+      <!-- Registrar Egreso -->
+      <a href="{% url 'registrar_egreso' %}" class="card-link">
+        <img src="{% static 'images/egreso.png' %}" alt="Egreso" class="card-icon">
+        <h3 class="card-title">Registrar Egreso</h3>
+      </a>
+
+    {% elif user.rol == 'empleado' %}
+      <!-- Panel de Empleado -->
+      <a href="{% url 'empleado_dashboard' %}" class="card-link">
+        <img src="{% static 'images/empleado_dashboard.png' %}" alt="Empleado" class="card-icon">
+        <h3 class="card-title">Panel de Empleado</h3>
+      </a>
+
+      <!-- Inventario -->
+      <a href="{% url 'lista_productos' %}" class="card-link">
+        <img src="{% static 'images/inventario.png' %}" alt="Inventario" class="card-icon">
+        <h3 class="card-title">Inventario</h3>
+      </a>
     {% endif %}
-</body>
-</html>
+  </div>
+
+{% else %}
+  <p>
+    <a href="{% url 'login' %}" class="btn btn-success">Iniciar Sesión</a>
+  </p>
+{% endif %}
+{% endblock %}

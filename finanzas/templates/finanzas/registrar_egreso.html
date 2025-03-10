@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Registrar Egreso{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+  <h1 class="admin-title">Registrar Egreso</h1>
+
+  {% if messages %}
+    <ul class="admin-messages">
+      {% for msg in messages %}
+        <li>{{ msg }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <form method="post" class="admin-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <!-- Botón para guardar -->
+    <button type="submit" class="admin-button">
+      Guardar
+    </button>
+
+    <!-- Enlace para cancelar -->
+    <a href="{% url 'resumen_financiero' %}" class="admin-button admin-button-cancel">
+      Cancelar
+    </a>
+  </form>
+</div>
+{% endblock %}

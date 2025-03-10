@@ -1,0 +1,119 @@
+/* login.css */
+
+/* 
+  Paleta de colores:
+  #17252A (color1 - azul petróleo muy oscuro)
+  #2B7A78 (color2 - verde azulado oscuro)
+  #3AAFA9 (color3 - turquesa)
+  #DEF2F1 (color4 - gris azulado muy claro)
+  #FEFFFF (color5 - casi blanco)
+*/
+
+:root {
+    --color1: #0057ff;
+    --color2: #434347;
+    --color3: #000000;
+    --color4: #fffff2;
+    --color5: #FfFFFF;
+    --main-font: "Century Gothic", sans-serif;
+}
+
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--main-font), sans-serif;
+    /* Imagen de fondo */
+
+    background: url("/static/images/fondo_login.jpg") no-repeat center center fixed;
+    background-size: cover;
+
+    
+    /* Fallback color si la imagen no carga */
+    background-color: var(--color4);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: var(--color5);
+}
+
+/* Contenedor principal del login con transparencia */
+.login-container {
+    background-color: rgba(255, 255, 255, 0.2); /* Transparencia */
+    backdrop-filter: blur(4px);                 /* Efecto de desenfoque si el navegador soporta */
+    border: 1px solid var(--color3);
+    border-radius: 8px;
+    padding: 2rem;
+    width: 350px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* Título */
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: var(--color3);
+}
+
+/* Mensajes de error */
+.error-messages {
+    list-style: none;
+    margin-bottom: 1rem;
+    color: #ff4f4f; /* Rojo para errores */
+}
+
+/* Grupos de campos */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: bold;
+    color: var(--color5);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--color2);
+    border-radius: 4px;
+    font-family: var(--main-font), sans-serif;
+}
+
+/* Botón de enviar */
+.btn-submit {
+    background-color: var(--color2);
+    color: var(--color5);
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: var(--main-font), sans-serif;
+    width: 100%;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+    margin-top: 0.5rem;
+}
+
+.btn-submit:hover {
+    background-color: var(--color3);
+}
+
+/* Responsivo: pantallas pequeñas */
+@media (max-width: 480px) {
+    .login-container {
+        width: 90%;
+        padding: 1rem;
+    }
+    .btn-submit {
+        font-size: 0.9rem;
+    }
+}

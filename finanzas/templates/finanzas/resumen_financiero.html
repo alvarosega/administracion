@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Resumen Financiero{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+  <h1 class="admin-title">Resumen Financiero (Negocio: {{ request.user.negocio }})</h1>
+
+  <!-- Formulario para filtrar por fechas -->
+  <form method="get" class="admin-form admin-filter-form">
+    <label class="admin-label">Fecha Inicio (YYYY-MM-DD):</label>
+    <input type="text" name="fecha_inicio" value="{{ fecha_inicio|default_if_none:'' }}" class="admin-input">
+    <label class="admin-label">Fecha Fin (YYYY-MM-DD):</label>
+    <input type="text" name="fecha_fin" value="{{ fecha_fin|default_if_none:'' }}" class="admin-input">
+    <button type="submit" class="admin-button">Filtrar</button>
+  </form>
+
+  <!-- Totales de ingresos, egresos, y utilidad -->
+  <p class="admin-total">Total Ingresos: <strong>{{ total_ingresos }}</strong></p>
+  <p class="admin-total">Total Egresos: <strong>{{ total_egresos }}</strong></p>
+  <p class="admin-total">Utilidad: <strong>{{ utilidad }}</strong></p>
+
+  <!-- Enlace para exportar CSV -->
+  <p>
+    <a href="{% url 'exportar_finanzas_csv' %}" class="admin-button admin-button-export">
+      Exportar CSV
+    </a>
+  </p>
+
+  <hr class="admin-divider">
+
+  <!-- Tabla de movimientos financieros -->
+  <div class="table-responsive">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th class="admin-table-header">Tipo</th>
+          <th class="admin-table-header">Monto</th>
+          <th class="admin-table-header">Fecha</th>
+          <th class="admin-table-header">Descripción</th>
+          <th class="admin-table-header">Usuario</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for mov in movimientos %}
+          <tr class="admin-table-row">
+            <td class="admin-table-data">{{ mov.tipo }}</td>
+            <td class="admin-table-data">{{ mov.monto }}</td>
+            <td class="admin-table-data">{{ mov.fecha }}</td>
+            <td class="admin-table-data">{{ mov.descripcion }}</td>
+            <td class="admin-table-data">
+              {% if mov.usuario %}
+                {{ mov.usuario.username }}
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Volver a Inicio -->
+  <p>
+    <a href="/" class="admin-button admin-button-cancel">
+      Volver a Inicio
+    </a>
+  </p>
+</div>
+{% endblock %}

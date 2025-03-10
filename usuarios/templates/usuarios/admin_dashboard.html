@@ -1,16 +1,42 @@
-<!-- usuarios/templates/usuarios/admin_dashboard.html -->
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Panel de Administrador</title>
-</head>
-<body>
-    <h1>Panel de Administrador</h1>
-    <p>Bienvenido, {{ request.user.username }}</p>
-    <p>Negocio: {{ request.user.negocio }}</p>
+{% extends 'base.html' %}
+{% load static %}
 
-    <p><a href="{% url 'lista_usuarios' %}">Gestionar Usuarios</a></p>
-    <p><a href="/">Volver a Inicio</a></p>
-</body>
-</html>
+{% block title %}Panel de Administrador{% endblock %}
+
+{% block content %}
+<!-- Contenedor principal para aplicar estilos con CSS -->
+<div class="admin-dashboard">
+  <h1>Panel de Administrador</h1>
+  <p>Bienvenido, {{ request.user.username }}</p>
+  <p>Negocio: {{ request.user.negocio }}</p>
+
+  <!-- Enlaces para el administrador -->
+  <div class="admin-links">
+    <p>
+      <a href="{% url 'lista_usuarios' %}" class="admin-link">
+        Gestionar Usuarios
+      </a>
+    </p>
+    <p>
+      <a href="{% url 'lista_productos' %}" class="admin-link">
+        Inventario
+      </a>
+    </p>
+    <p>
+      <a href="{% url 'resumen_financiero' %}" class="admin-link">
+        Finanzas
+      </a>
+    </p>
+    <p>
+      <a href="{% url 'registrar_egreso' %}" class="admin-link">
+        Registrar Egreso
+      </a>
+    </p>
+    <p>
+      <a href="{% url 'index' %}" class="admin-link">
+        Volver a Inicio
+      </a>
+    </p>
+  </div>
+</div>
+{% endblock %}

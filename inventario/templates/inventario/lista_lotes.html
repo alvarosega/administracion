@@ -1,42 +1,81 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Lotes de {{ producto.nombre }}</title>
-</head>
-<body>
-    <h1>Lotes de {{ producto.nombre }}</h1>
-    <p>Stock Total: {{ producto.stock_total }}</p>
+{% extends 'base.html' %}
+{% load static %}
 
-    {% if request.user.rol == 'admin' %}
-        <p><a href="{% url 'crear_lote' producto.id %}">Crear Lote</a></p>
-    {% endif %}
+{% block title %}Lotes de {{ producto.nombre }}{% endblock %}
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Cantidad</th>
-                <th>Fecha Vencimiento</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for lote in lotes %}
-            <tr>
-                <td>{{ lote.cantidad }}</td>
-                <td>{% if lote.fecha_vencimiento %}{{ lote.fecha_vencimiento }}{% else %}-{% endif %}</td>
-                <td>
-                    {% if request.user.rol == 'admin' %}
-                        <a href="{% url 'editar_lote' lote.id %}">Editar</a> |
-                        <a href="{% url 'eliminar_lote' lote.id %}" onclick="return confirm('¿Eliminar lote?')">Eliminar</a> |
-                    {% endif %}
-                    <a href="{% url 'registrar_venta' lote.id %}">Registrar Venta</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
+{% block content %}
+<div class="admin-dashboard">
+  <h1 class="admin-title">Lotes de {{ producto.nombre }}</h1>
+  <p class="admin-subtitle">Stock Total: {{ producto.stock_total }}</p>
+
+  {% if request.user.rol == 'admin' %}
+    <p>
+      <a href="{% url 'crear_lote' producto.id %}" class="admin-button">
+        Crear Lote
+      </a>
+    </p>
+  {% endif %}
+
+  <!-- Tabla de lotes -->
+  <div class="table-responsive">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th class="admin-table-header">Cantidad</th>
+          <th class="admin-table-header">Descripción</th> <!-- Encabezado renombrado -->
+          <th class="admin-table-header">Fecha Vencimiento</th>
+          <th class="admin-table-header">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for lote in lotes %}
+          <tr class="admin-table-row">
+            <!-- Primera columna: Cantidad -->
+            <td class="admin-table-data">{{ lote.cantidad }}</td>
+
+            <!-- Segunda columna: Descripción -->
+            <td class="admin-table-data">
+              {% if lote.descripcion %}
+                {{ lote.descripcion }}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+
+            <!-- Tercera columna: Fecha de vencimiento -->
+            <td class="admin-table-data">
+              {% if lote.fecha_vencimiento %}
+                {{ lote.fecha_vencimiento }}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+
+            <!-- Cuarta columna: Acciones -->
+            <td class="admin-table-data">
+              {% if request.user.rol == 'admin' %}
+                <a href="{% url 'editar_lote' lote.id %}" class="admin-link-sm">Editar</a> |
+                <a href="{% url 'eliminar_lote' lote.id %}"
+                   class="admin-link-sm admin-link-danger"
+                   onclick="return confirm('¿Eliminar lote?')">
+                  Eliminar
+                </a> |
+              {% endif %}
+              <a href="{% url 'registrar_venta' lote.id %}" class="admin-link-sm">
+                Registrar Venta
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
     </table>
+  </div>
 
-    <p><a href="{% url 'lista_productos' %}">Volver a Productos</a></p>
-</body>
-</html>
+  <!-- Volver a la lista de productos -->
+  <p>
+    <a href="{% url 'lista_productos' %}" class="admin-button admin-button-cancel">
+      Volver a Productos
+    </a>
+  </p>
+</div>
+{% endblock %}

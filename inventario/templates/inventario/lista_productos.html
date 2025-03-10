@@ -1,70 +1,103 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Productos</title>
-</head>
-<body>
-    <!-- Corregimos el título y añadimos un enlace para descargar la plantilla -->
-    <h1>Lista de Productos (Negocio: {{ request.user.negocio }})</h1>
+{% extends 'base.html' %}
+{% load static %}
 
-    {% if request.user.rol == 'admin' %}
-        <p><a href="{% url 'crear_producto' %}">Crear Producto</a></p>
-        <p><a href="{% url 'importar_inventario' %}">Importar CSV</a></p>
-        <!-- NUEVA LÍNEA: enlace para descargar la plantilla de Excel/CSV -->
-        <p><a href="{% url 'descargar_plantilla_inventario' %}">Descargar Plantilla Excel</a></p>
-    {% endif %}
+{% block title %}Lista de Productos{% endblock %}
 
+{% block content %}
+<div class="admin-dashboard">
+  <h1 class="admin-title">Lista de Productos (Negocio: {{ request.user.negocio }})</h1>
 
-    {% if messages %}
-        <ul style="color:green;">
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+  <!-- Opciones solo para el rol 'admin' -->
+  {% if request.user.rol == 'admin' %}
+    <div class="admin-links">
+      <p>
+        <a href="{% url 'crear_producto' %}" class="admin-button">
+          Crear Producto
+        </a>
+      </p>
+      <p>
+        <a href="{% url 'importar_inventario' %}" class="admin-button">
+          Importar CSV
+        </a>
+      </p>
+      <p>
+        <a href="{% url 'descargar_plantilla_inventario' %}" class="admin-button">
+          Descargar Plantilla Excel
+        </a>
+      </p>
+    </div>
+  {% endif %}
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Tipo</th>
-                <th>Precio Venta</th>
-                <th>Stock Total</th>
-                <th>Stock Mínimo</th>
-                <th>Alerta</th>
-                {% if request.user.rol == 'admin' %}
-                <th>Acciones</th>
-                {% endif %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for p in productos %}
-            <tr>
-                <td>{{ p.nombre }}</td>
-                <td>{{ p.tipo_producto }}</td>
-                <td>{{ p.precio_venta }}</td>
-                <td>{{ p.stock_total }}</td>
-                <td>{{ p.stock_minimo }}</td>
-                <td>
-                    {% if p.alerta_stock_minimo %}
-                        <strong style="color:red;">¡Stock Bajo!</strong>
-                    {% else %}
-                        OK
-                    {% endif %}
-                </td>
-                {% if request.user.rol == 'admin' %}
-                <td>
-                    <a href="{% url 'editar_producto' p.id %}">Editar</a> |
-                    <a href="{% url 'eliminar_producto' p.id %}" onclick="return confirm('¿Eliminar producto?')">Eliminar</a> |
-                    <a href="{% url 'lista_lotes' p.id %}">Ver Lotes</a>
-                </td>
-                {% else %}
-                <td><a href="{% url 'lista_lotes' p.id %}">Ver Lotes</a></td>
-                {% endif %}
-            </tr>
-            {% endfor %}
-        </tbody>
+  <!-- Mensajes de éxito o aviso -->
+  {% if messages %}
+    <ul class="admin-messages">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <!-- Tabla de productos -->
+  <div class="table-responsive">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th class="admin-table-header">Nombre</th>
+          <th class="admin-table-header">Tipo</th>
+          <th class="admin-table-header">descripcion</th>
+          <th class="admin-table-header">Precio Venta</th>
+          <th class="admin-table-header">Stock Total</th>
+          <th class="admin-table-header">Stock Mínimo</th>
+          <th class="admin-table-header">Alerta</th>
+          {% if request.user.rol == 'admin' %}
+            <th class="admin-table-header">Acciones</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in productos %}
+          <tr class="admin-table-row">
+            <td class="admin-table-data">{{ p.nombre }}</td>
+            <td class="admin-table-data">{{ p.tipo_producto }}</td>
+            <td class="admin-table-data">{{ p.descripcion }}</td>
+            <td class="admin-table-data">{{ p.precio_venta }}</td>
+            <td class="admin-table-data">{{ p.stock_total }}</td>
+            <td class="admin-table-data">{{ p.stock_minimo }}</td>
+            <td class="admin-table-data">
+              {% if p.alerta_stock_minimo %}
+                <strong class="admin-alert">¡Stock Bajo!</strong>
+              {% else %}
+                OK
+              {% endif %}
+            </td>
+            {% if request.user.rol == 'admin' %}
+              <td class="admin-table-data">
+                <a href="{% url 'editar_producto' p.id %}"
+                   class="admin-link-sm">
+                  Editar
+                </a> |
+                <a href="{% url 'eliminar_producto' p.id %}"
+                   class="admin-link-sm admin-link-danger"
+                   onclick="return confirm('¿Eliminar producto?')">
+                  Eliminar
+                </a> |
+                <a href="{% url 'lista_lotes' p.id %}"
+                   class="admin-link-sm">
+                  Ver Lotes
+                </a>
+              </td>
+            {% else %}
+              <td class="admin-table-data">
+                <a href="{% url 'lista_lotes' p.id %}"
+                   class="admin-link-sm">
+                  Ver Lotes
+                </a>
+              </td>
+            {% endif %}
+          </tr>
+        {% endfor %}
+      </tbody>
     </table>
-</body>
-</html>
+  </div>
+</div>
+{% endblock %}
